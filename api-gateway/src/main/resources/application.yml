@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: api-gateway
+  main:
+    web-application-type: reactive
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway.route.RouteDefinitionLocator: INFO
+    org.springframework.cloud.gateway: TRACE
+
+spring.cloud.gateway.routes:
+  - id: product-service
+    uri: lb://product-service
+    predicates:
+      - Path=/api/product
+
+  - id: order-service
+    uri: lb://order-service
+    predicates:
+      - Path=/api/order
+
+  - id: inventory-service
+    uri: lb://inventory-service
+    predicates:
+      - Path=/api/inventory
+
+  - id: discovery-server
+    uri: http://localhost:8761
+    predicates:
+        - Path=/eureka/web
+    filters:
+        - SetPath=/
+
+spring.zipkin:
+  base-url: http://localhost:9411
+spring.sleuth:
+  sampler:
+    probability: 1.0
+
+server:
+  port: 8090
